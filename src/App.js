@@ -49,7 +49,32 @@ class App extends Component {
             box: {},
             route: 'signin',
             isSignedIn: false,
+            user: {
+                id: '',
+                name: '',
+                email: '',
+                entries: 0,
+                joined: ''
+            }
         }
+    }
+
+    componentDidMount() {
+        fetch('http://localhost:3300/')
+            .then(response => response.json())
+            .then(console.log)
+    }
+
+    loadUser = (data) => {
+        this.setState({
+            user: {
+                id: data.id,
+                name: data.name,
+                email: data.email,
+                entries: data.entries,
+                joined: data.joined
+            }
+        });
     }
 
     calculateFaceLocation = (data) => {
@@ -78,7 +103,23 @@ class App extends Component {
         this.setState({imageUrl: this.state.input});
 
         app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
-            .then(response => this.calculateFaceLocation(response))
+            .then(response => {
+                fetch('http://localhost:3300/image', {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        id: this.state.user.id,
+                    })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data) {
+                            console.log(data.entries);
+                            this.setState(Object.assign(this.state.user, {entries: data.entries}));
+                        }
+                    });
+                return this.calculateFaceLocation(response)
+            })
             .then(box => this.displayFaceBox(box))
             .catch(err => console.log(err));
     };
@@ -93,18 +134,18 @@ class App extends Component {
     };
 
     renderPage() {
-        const {route, box, imageUrl} = this.state;
+        const {route, box, imageUrl, user} = this.state;
         switch (route) {
             case 'signin':
             case 'signout':
-                return <SignIn onRouteChange={this.onRouteChange}/>;
+                return <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>;
             case 'register':
-                return <Register onRouteChange={this.onRouteChange}/>;
+                return <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>;
             case 'home':
                 return (
                     <div className='pa3 tc'>
                         <Logo/>
-                        <Rank/>
+                        <Rank name={user.name} entries={user.entries} />
                         <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
                         <FaceRecognition box={box} imageUrl={imageUrl}/>
                     </div>
