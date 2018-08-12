@@ -152,6 +152,8 @@ class App extends Component {
                 );
             case 'about':
                 return <About/>;
+            default:
+                return '<h3>Page not found</h3>';
         }
     }
 

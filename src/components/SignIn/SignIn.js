@@ -34,6 +34,7 @@ class SignIn extends React.Component {
                         this.props.onRouteChange('home');
                     }
                 } else {
+                    alert(data.status);
                     console.log(data.status);
                 }
             });
