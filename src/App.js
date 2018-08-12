@@ -57,7 +57,7 @@ class App extends Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:3300/')
+        fetch('https://frozen-springs-28873.herokuapp.com/')
             .then(response => response.json())
             .then(console.log)
     }
@@ -99,7 +99,7 @@ class App extends Component {
     onButtonSubmit = () => {
         this.setState({imageUrl: this.state.input});
 
-        fetch('http://localhost:3300/detect-face', {
+        fetch('https://frozen-springs-28873.herokuapp.com/detect-face', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -108,7 +108,7 @@ class App extends Component {
         })
             .then(response => response.json())
             .then(response => {
-                fetch('http://localhost:3300/update-entry', {
+                fetch('https://frozen-springs-28873.herokuapp.com/update-entry', {
                     method: 'PUT',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
