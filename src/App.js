@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import Clarifai from 'clarifai';
 import Particles from "react-particles-js";
 import Navigation from "./components/Navigation/Navigation";
 import Logo from "./components/Logo/Logo";
@@ -10,10 +9,6 @@ import SignIn from "./components/SignIn/SignIn";
 import Register from "./components/Register/Register";
 import About from "./components/About/About";
 import './App.css';
-
-const app = new Clarifai.App({
-    apiKey: '6b658da484a248d8959b55c89c181034'
-});
 
 const particleOptions = {
     particles: {
@@ -104,9 +99,16 @@ class App extends Component {
     onButtonSubmit = () => {
         this.setState({imageUrl: this.state.input});
 
-        app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+        fetch('http://localhost:3300/detect-face', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                input: this.state.input
+            })
+        })
+            .then(response => response.json())
             .then(response => {
-                fetch('http://localhost:3300/image', {
+                fetch('http://localhost:3300/update-entry', {
                     method: 'PUT',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
@@ -115,7 +117,7 @@ class App extends Component {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if(data) {
+                        if (data) {
                             console.log(data.entries);
                             this.setState(Object.assign(this.state.user, {entries: data.entries}));
                         }
@@ -148,7 +150,7 @@ class App extends Component {
                 return (
                     <div className='pa3 tc'>
                         <Logo/>
-                        <Rank name={user.name} entries={user.entries} />
+                        <Rank name={user.name} entries={user.entries}/>
                         <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
                         <FaceRecognition box={box} imageUrl={imageUrl}/>
                     </div>
