@@ -37,7 +37,7 @@ const particleOptions = {
 const initialState = {
     input: '',
     imageUrl: '',
-    box: {},
+    boxes: [],
     route: 'signin',
     isSignedIn: false,
     user: {
@@ -57,6 +57,7 @@ class App extends Component {
     }
 
     componentDidMount() {
+        // testing only
         fetch('https://frozen-springs-28873.herokuapp.com/')
             .then(response => response.json())
             .then(console.log)
@@ -74,22 +75,23 @@ class App extends Component {
         });
     }
 
-    calculateFaceLocation = (data) => {
-        const clarifyFace = data.outputs[0].data.regions[0].region_info.bounding_box;
-        const image = document.getElementById('input-image');
-        const width = Number(image.width);
-        const height = Number(image.height);
-        return {
-            leftCol: clarifyFace.left_col * width,
-            topRow: clarifyFace.top_row * height,
-            rightCol: width - (clarifyFace.right_col * width),
-            bottomRow: height - (clarifyFace.bottom_row * height),
-        }
+    calculateFaceLocations = (data) => {
+        return data.outputs[0].data.regions.map(face => {
+            const clarifyFace = face.region_info.bounding_box;
+            const image = document.getElementById('input-image');
+            const width = Number(image.width);
+            const height = Number(image.height);
+            return {
+                leftCol: clarifyFace.left_col * width,
+                topRow: clarifyFace.top_row * height,
+                rightCol: width - (clarifyFace.right_col * width),
+                bottomRow: height - (clarifyFace.bottom_row * height),
+            }
+        });
     };
 
-    displayFaceBox = (box) => {
-        console.log(box);
-        this.setState({box: box});
+    displayFaceBoxes = (boxes) => {
+        this.setState({boxes: boxes});
     };
 
     onInputChange = (event) => {
@@ -118,14 +120,13 @@ class App extends Component {
                     .then(res => res.json())
                     .then(data => {
                         if (data) {
-                            console.log(data.entries);
                             this.setState(Object.assign(this.state.user, {entries: data.entries}));
                         }
                     })
                     .catch(console.log);
-                return this.calculateFaceLocation(response)
+                return this.calculateFaceLocations(response)
             })
-            .then(box => this.displayFaceBox(box))
+            .then(boxes => this.displayFaceBoxes(boxes))
             .catch(err => console.log(err));
     };
 
@@ -139,7 +140,7 @@ class App extends Component {
     };
 
     renderPage() {
-        const {route, box, imageUrl, user} = this.state;
+        const {route, boxes, imageUrl, user} = this.state;
         switch (route) {
             case 'signin':
             case 'signout':
@@ -152,7 +153,7 @@ class App extends Component {
                         <Logo/>
                         <Rank name={user.name} entries={user.entries}/>
                         <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
-                        <FaceRecognition box={box} imageUrl={imageUrl}/>
+                        <FaceRecognition boxes={boxes} imageUrl={imageUrl}/>
                     </div>
                 );
             case 'about':

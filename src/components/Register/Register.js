@@ -34,7 +34,7 @@ class Register extends React.Component {
         })
             .then(res => res.json())
             .then(user => {
-                if(user.id) {
+                if (user.id) {
                     this.props.loadUser(user);
                     this.props.onRouteChange('home');
                 } else {
@@ -48,7 +48,8 @@ class Register extends React.Component {
         const {onRouteChange} = this.props;
         return (
             <article className="ma3">
-                <main className="ml-auto mr-auto pa4 black-80 br3 shadow-5 bg-white ba b--black-10 mv4 w-100 w-50-m w-25-l">
+                <main
+                    className="ml-auto mr-auto pa4 black-80 br3 shadow-5 bg-white ba b--black-10 mv4 w-100 w-50-m w-25-l">
                     <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
                         <legend className="f3 fw6 ph0 mh0 mb0">Register</legend>
                         <p className='mt0 black-30'>Register new account</p>
@@ -74,7 +75,10 @@ class Register extends React.Component {
                                type="submit" value="Register"/>
                     </div>
                     <div className="lh-copy mt3">
-                        <a href="javascript:void(0)" onClick={() => onRouteChange('signin')} className="f6 link dim black">Back to login page</a>
+                        <a onClick={(e) => {
+                            e.preventDefault();
+                            onRouteChange('signin');
+                        }} className="f6 link dim black">Back to login page</a>
                     </div>
                 </main>
             </article>

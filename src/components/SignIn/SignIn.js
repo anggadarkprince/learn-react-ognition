@@ -66,9 +66,12 @@ class SignIn extends React.Component {
                                type="submit" value="Sign in"/>
                     </div>
                     <div className="lh-copy mt3">
-                        <strong>Need account?</strong> <a href="javascript:void(0)"
-                                                          onClick={() => onRouteChange('register')}
-                                                          className="f6 link dim black">Register here</a>
+                        <strong>Need account?</strong>
+                        <a onClick={(e) => {
+                            e.preventDefault();
+                            onRouteChange('register')
+                        }}
+                           className="f6 link dim black">Register here</a>
                     </div>
                 </main>
             </article>
