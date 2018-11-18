@@ -9,6 +9,7 @@ import SignIn from "./components/SignIn/SignIn";
 import Register from "./components/Register/Register";
 import About from "./components/About/About";
 import './App.css';
+import variables from "./variables";
 
 const particleOptions = {
     particles: {
@@ -58,7 +59,7 @@ class App extends Component {
 
     componentDidMount() {
         // testing only
-        fetch('https://frozen-springs-28873.herokuapp.com/')
+        fetch(variables.API_URL)
             .then(response => response.json())
             .then(console.log)
     }
@@ -101,7 +102,7 @@ class App extends Component {
     onButtonSubmit = () => {
         this.setState({imageUrl: this.state.input});
 
-        fetch('https://frozen-springs-28873.herokuapp.com/detect-face', {
+        fetch(variables.API_URL + '/detect-face', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -110,7 +111,7 @@ class App extends Component {
         })
             .then(response => response.json())
             .then(response => {
-                fetch('https://frozen-springs-28873.herokuapp.com/update-entry', {
+                fetch(variables.API_URL + '/update-entry', {
                     method: 'PUT',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({

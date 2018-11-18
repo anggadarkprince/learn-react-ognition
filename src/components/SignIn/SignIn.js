@@ -1,4 +1,5 @@
 import React from 'react';
+import variables from "../../variables";
 
 class SignIn extends React.Component {
     constructor(props) {
@@ -18,7 +19,7 @@ class SignIn extends React.Component {
     }
 
     onSubmitSignIn = () => {
-        fetch('https://frozen-springs-28873.herokuapp.com/signin', {
+        fetch(variables.API_URL + '/signin', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -51,12 +52,12 @@ class SignIn extends React.Component {
                         <p className='mt0 black-30'>Login to your dashboard</p>
                         <div className="mt3">
                             <label className="db fw6 lh-copy f6 mb1" htmlFor="email-address">Email</label>
-                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray"
+                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray" placeholder='Your email address'
                                    onChange={this.onEmailChange} type="email" name="email-address" id="email-address"/>
                         </div>
                         <div className="mv3">
                             <label className="db fw6 lh-copy f6 mb1" htmlFor="password">Password</label>
-                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray"
+                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray" placeholder='Secret password'
                                    onChange={this.onPasswordChange} type="password" name="password" id="password"/>
                         </div>
                     </fieldset>
@@ -66,12 +67,12 @@ class SignIn extends React.Component {
                                type="submit" value="Sign in"/>
                     </div>
                     <div className="lh-copy mt3">
-                        <strong>Need account?</strong>
+                        <strong>Need account? </strong>
                         <a onClick={(e) => {
                             e.preventDefault();
                             onRouteChange('register')
                         }}
-                           className="f6 link dim black">Register here</a>
+                           className="f6 link dim black cursor-pointer">Register here</a>
                     </div>
                 </main>
             </article>

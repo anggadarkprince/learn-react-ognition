@@ -1,4 +1,5 @@
 import React from 'react';
+import variables from "../../variables";
 
 class Register extends React.Component {
     constructor(props) {
@@ -23,7 +24,7 @@ class Register extends React.Component {
     }
 
     onSubmitRegister = () => {
-        fetch('https://frozen-springs-28873.herokuapp.com/register', {
+        fetch(variables.API_URL + '/register', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -55,17 +56,17 @@ class Register extends React.Component {
                         <p className='mt0 black-30'>Register new account</p>
                         <div className="mt3">
                             <label className="db fw6 lh-copy f6 mb1" htmlFor="email-address">Name</label>
-                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray"
+                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray" placeholder='Full name'
                                    onChange={this.onNameChange} type="text" name="name" id="name"/>
                         </div>
                         <div className="mt3">
                             <label className="db fw6 lh-copy f6 mb1" htmlFor="email-address">Email</label>
-                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray"
+                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray" placeholder='Email address'
                                    onChange={this.onEmailChange} type="email" name="email-address" id="email-address"/>
                         </div>
                         <div className="mv3">
                             <label className="db fw6 lh-copy f6 mb1" htmlFor="password">Password</label>
-                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray"
+                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray" placeholder='Secret password'
                                    onChange={this.onPasswordChange} type="password" name="password" id="password"/>
                         </div>
                     </fieldset>
@@ -78,7 +79,7 @@ class Register extends React.Component {
                         <a onClick={(e) => {
                             e.preventDefault();
                             onRouteChange('signin');
-                        }} className="f6 link dim black">Back to login page</a>
+                        }} className="f6 link dim black cursor-pointer">Back to login page</a>
                     </div>
                 </main>
             </article>
