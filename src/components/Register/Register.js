@@ -55,7 +55,7 @@ class Register extends React.Component {
                         <legend className="f3 fw6 ph0 mh0 mb0">Register</legend>
                         <p className='mt0 black-30'>Register new account</p>
                         <div className="mt3">
-                            <label className="db fw6 lh-copy f6 mb1" htmlFor="email-address">Name</label>
+                            <label className="db fw6 lh-copy f6 mb1" htmlFor="name">Name</label>
                             <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray" placeholder='Full name'
                                    onChange={this.onNameChange} type="text" name="name" id="name"/>
                         </div>

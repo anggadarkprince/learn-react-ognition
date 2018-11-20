@@ -8,8 +8,10 @@ import Rank from "./components/Rank/Rank";
 import SignIn from "./components/SignIn/SignIn";
 import Register from "./components/Register/Register";
 import About from "./components/About/About";
+import Modal from './components/Modal/Modal';
 import './App.css';
 import variables from "./variables";
+import Profile from "./components/Profile/Profile";
 
 const particleOptions = {
     particles: {
@@ -39,8 +41,9 @@ const initialState = {
     input: '',
     imageUrl: '',
     boxes: [],
-    route: 'signin',
-    isSignedIn: false,
+    route: 'home',
+    isProfileOpen: false,
+    isSignedIn: true,
     user: {
         id: '',
         name: '',
@@ -160,17 +163,36 @@ class App extends Component {
             case 'about':
                 return <About/>;
             default:
-                return '<h3>Page not found</h3>';
+                return (
+                    <div className={'tc ma4 white'}>
+                        <h2>Error 404</h2>
+                        <h4>Page not found</h4>
+                    </div>
+                );
         }
     }
 
+    toggleModal = () => {
+        this.setState(prevState => ({
+            ...prevState,
+            isProfileOpen: !prevState.isProfileOpen
+        }));
+    }
+
     render() {
-        const {route, isSignedIn} = this.state;
+        const {route, isSignedIn, isProfileOpen} = this.state;
         return (
             <div className="App">
                 <Particles className='particles' params={particleOptions}/>
-                <Navigation onRouteChange={this.onRouteChange} page={route} isSignedIn={isSignedIn}/>
+                <Navigation onRouteChange={this.onRouteChange} page={route}
+                            isSignedIn={isSignedIn} toggleModal={this.toggleModal}/>
                 {this.renderPage()}
+                {isProfileOpen &&
+                <Modal>
+                    <Profile isProfileOpen={isProfileOpen} toggleModal={this.toggleModal}
+                             user={this.state.user} loadUser={this.loadUser}/>
+                </Modal>
+                }
             </div>
         );
     }

@@ -46,7 +46,7 @@ class SignIn extends React.Component {
         return (
             <article className="ma3">
                 <main
-                    className="ml-auto mr-auto pa4 black-80 br3 shadow-5 bg-white ba b--black-10 mv4 w-100 w-50-m w-25-l">
+                    className="ml-auto mr-auto pa4 black-80 br3 shadow-5 bg-white ba b--black-10 mv4 w-50-m w-25-l">
                     <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
                         <legend className="f3 fw6 ph0 mh0 mb0">Sign In</legend>
                         <p className='mt0 black-30'>Login to your dashboard</p>
