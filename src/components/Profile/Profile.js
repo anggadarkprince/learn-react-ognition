@@ -29,23 +29,31 @@ class Profile extends React.Component {
     }
 
     onProfileUpdate = (data) => {
-        const options = {
-            method: 'post',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                name: data.name,
-                email: data.email,
-                password: data.password
-            })
+        const token = window.sessionStorage.getItem('token');
+        if (token) {
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+                body: JSON.stringify({
+                    name: data.name,
+                    email: data.email,
+                    password: data.password
+                })
+            }
+            fetch(`${variables.API_URL}/profile/${this.props.user.id}`, options)
+                .then((resp) => {
+                    if (resp.status === 200) {
+                        this.props.toggleModal();
+                        this.props.loadUser({...this.props.user, ...data});
+                    }
+                })
+                .catch(err => console.log(err.message));
+        } else {
+            alert('unauthorized, refresh your browser and sign in again!');
         }
-        fetch(`${variables.API_URL}/profile/${this.props.user.id}`, options)
-            .then((resp) => {
-                if (resp.status === 200) {
-                    this.props.toggleModal();
-                    this.props.loadUser({...this.props.user, ...data});
-                }
-            })
-            .catch(err => console.log(err.message));
     }
 
     render() {

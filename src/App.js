@@ -41,9 +41,9 @@ const initialState = {
     input: '',
     imageUrl: '',
     boxes: [],
-    route: 'home',
+    route: 'signin',
     isProfileOpen: false,
-    isSignedIn: true,
+    isSignedIn: false,
     user: {
         id: '',
         name: '',
@@ -64,7 +64,42 @@ class App extends Component {
         // testing only
         fetch(variables.API_URL)
             .then(response => response.json())
-            .then(console.log)
+            .then(console.log);
+
+        // check auth token
+        const token = window.sessionStorage.getItem('token');
+        if (token) {
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                }
+            };
+            fetch(variables.API_URL + '/signin', options)
+                .then(res => res.json())
+                .then((data) => {
+                    if (data && data.id) {
+                        options.method = 'GET';
+                        fetch(variables.API_URL + `/profile/${data.id}`, options)
+                            .then(res => res.json())
+                            .then((user) => {
+                                if (user && user.email) {
+                                    this.loadUser(user);
+                                    this.onRouteChange('home');
+                                } else {
+                                    return Promise.reject('invalid user data');
+                                }
+                            })
+                            .catch(console.log);
+                    } else {
+                        return Promise.reject('cannot get user by token, token may expire in the server');
+                    }
+                })
+                .catch(console.log);
+        } else {
+            console.log('not login yet or token has expired in the client');
+        }
     }
 
     loadUser = (data) => {
@@ -105,37 +140,45 @@ class App extends Component {
     onButtonSubmit = () => {
         this.setState({imageUrl: this.state.input});
 
-        fetch(variables.API_URL + '/detect-face', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                input: this.state.input
-            })
-        })
-            .then(response => response.json())
-            .then(response => {
-                fetch(variables.API_URL + '/update-entry', {
-                    method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        id: this.state.user.id,
-                    })
+        const token = window.sessionStorage.getItem('token');
+        if (token) {
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+                body: JSON.stringify({
+                    input: this.state.input
                 })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data) {
-                            this.setState(Object.assign(this.state.user, {entries: data.entries}));
-                        }
-                    })
-                    .catch(console.log);
-                return this.calculateFaceLocations(response)
-            })
-            .then(boxes => this.displayFaceBoxes(boxes))
-            .catch(err => console.log(err));
+            };
+            fetch(variables.API_URL + '/detect-face', options)
+                .then(response => response.json())
+                .then(response => {
+                    options.method = 'PUT';
+                    options.body = JSON.stringify({
+                        id: this.state.user.id,
+                    });
+                    fetch(variables.API_URL + '/update-entry', options)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data) {
+                                this.setState(Object.assign(this.state.user, {entries: data.entries}));
+                            }
+                        })
+                        .catch(console.log);
+                    return this.calculateFaceLocations(response)
+                })
+                .then(boxes => this.displayFaceBoxes(boxes))
+                .catch(console.log);
+        } else {
+            alert('unauthorized, refresh your browser and sign in again!');
+        }
     };
 
     onRouteChange = (route) => {
         if (route === 'signout') {
+            window.sessionStorage.removeItem('token');
             this.setState(initialState);
         } else if (route === 'home') {
             this.setState({isSignedIn: true});

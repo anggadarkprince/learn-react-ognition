@@ -18,6 +18,10 @@ class SignIn extends React.Component {
         this.setState({signInPassword: event.target.value});
     }
 
+    saveAuthTokenInSession = (token) => {
+        window.sessionStorage.setItem('token', token);
+    }
+
     onSubmitSignIn = () => {
         fetch(variables.API_URL + '/signin', {
             method: 'POST',
@@ -29,13 +33,31 @@ class SignIn extends React.Component {
         })
             .then(res => res.json())
             .then(data => {
-                if (data.status === 'success') {
-                    if (data.user.id) {
-                        this.props.loadUser(data.user);
-                        this.props.onRouteChange('home');
-                    }
+                if (data.status === 'success' && data.userId && data.token) {
+                    this.saveAuthTokenInSession(data.token);
+
+                    const options = {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': data.token
+                        }
+                    };
+
+                    fetch(variables.API_URL + `/profile/${data.userId}`, options)
+                        .then(res => res.json())
+                        .then((user) => {
+                            if (user && user.email) {
+                                this.props.loadUser(user);
+                                this.props.onRouteChange('home');
+                            } else {
+                                return Promise.reject('invalid user data');
+                            }
+                        })
+                        .catch(console.log);
+
                 } else {
-                    alert(data.status);
+                    alert(data.status || 'Something went wrong');
                     console.log(data.status);
                 }
             });
@@ -52,12 +74,14 @@ class SignIn extends React.Component {
                         <p className='mt0 black-30'>Login to your dashboard</p>
                         <div className="mt3">
                             <label className="db fw6 lh-copy f6 mb1" htmlFor="email-address">Email</label>
-                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray" placeholder='Your email address'
+                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray"
+                                   placeholder='Your email address'
                                    onChange={this.onEmailChange} type="email" name="email-address" id="email-address"/>
                         </div>
                         <div className="mv3">
                             <label className="db fw6 lh-copy f6 mb1" htmlFor="password">Password</label>
-                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray" placeholder='Secret password'
+                            <input className="pa2 input-reset ba bg-transparent w-100 b--moon-gray"
+                                   placeholder='Secret password'
                                    onChange={this.onPasswordChange} type="password" name="password" id="password"/>
                         </div>
                     </fieldset>
